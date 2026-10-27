@@ -1,0 +1,20 @@
+digraph TF { rankdir=TB; graph [bgcolor="white"]; node [shape=box,style=rounded,fontname="DejaVu Sans"]; edge [fontname="DejaVu Sans",fontsize=9];
+"odom" -> "base_footprint" [label="DiffDrive + bridge /tf"];
+"base_link" -> "wheel_left_link" [label="robot_state_publisher /tf"];
+"base_link" -> "wheel_right_link" [label="robot_state_publisher /tf"];
+"map" -> "odom" [label="SLAM Toolbox /tf"];
+"base_footprint" -> "base_link" [label="robot_state_publisher /tf_static"];
+"camera_link" -> "camera_depth_frame" [label="robot_state_publisher /tf_static"];
+"camera_depth_frame" -> "camera_depth_optical_frame" [label="robot_state_publisher /tf_static"];
+"base_link" -> "camera_link" [label="robot_state_publisher /tf_static"];
+"camera_link" -> "camera_rgb_frame" [label="robot_state_publisher /tf_static"];
+"camera_rgb_frame" -> "camera_rgb_optical_frame" [label="robot_state_publisher /tf_static"];
+"base_link" -> "caster_back_left_link" [label="robot_state_publisher /tf_static"];
+"base_link" -> "caster_back_right_link" [label="robot_state_publisher /tf_static"];
+"base_link" -> "imu_link" [label="robot_state_publisher /tf_static"];
+"base_link" -> "base_scan" [label="robot_state_publisher /tf_static"];
+"base_link" -> "turtle_visual_1" [label="robot_state_publisher /tf_static"];
+"base_link" -> "turtle_visual_2" [label="robot_state_publisher /tf_static"];
+"base_link" -> "turtle_visual_3" [label="robot_state_publisher /tf_static"];
+"base_link" -> "turtle_visual_4" [label="robot_state_publisher /tf_static"];
+}

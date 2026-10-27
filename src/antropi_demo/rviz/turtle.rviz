@@ -1,0 +1,35 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Background Color: 35; 40; 48
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Displays:
+    - Class: rviz_default_plugins/RobotModel
+      Name: TurtleBot3 with turtle shell
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /robot_description
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+      Visual Enabled: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Name: Turtle close-up
+      Target Frame: base_link
+      Distance: 0.65
+      Pitch: 0.6
+      Yaw: 0.65
+      Focal Point:
+        X: -0.04
+        Y: 0
+        Z: 0.05
+  Enabled: true
+Window Geometry:
+  Width: 900
+  Height: 650

@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<sdf version="1.9" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="block" params="name x y sx sy sz color">
+    <model name="${name}">
+      <static>true</static>
+      <pose>${x} ${y} ${sz/2} 0 0 0</pose>
+      <link name="body">
+        <collision name="collision"><geometry><box><size>${sx} ${sy} ${sz}</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>${sx} ${sy} ${sz}</size></box></geometry>
+          <material><ambient>${color}</ambient><diffuse>${color}</diffuse></material>
+        </visual>
+      </link>
+    </model>
+  </xacro:macro>
+  <xacro:macro name="pad" params="name x y color">
+    <!-- Visual only, below the laser plane; no collision geometry. -->
+    <model name="${name}">
+      <static>true</static><pose>${x} ${y} 0.003 0 0 0</pose>
+      <link name="pad"><visual name="visual">
+        <geometry><cylinder><radius>0.45</radius><length>0.004</length></cylinder></geometry>
+        <material><ambient>${color}</ambient><diffuse>${color}</diffuse></material>
+      </visual></link>
+    </model>
+  </xacro:macro>
+  <world name="antropi_base">
+    <physics name="default" type="ignored"><max_step_size>0.003</max_step_size><real_time_factor>1.0</real_time_factor></physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+    <scene><ambient>0.65 0.65 0.65 1</ambient><background>0.12 0.15 0.2 1</background><shadows>false</shadows></scene>
+    <light name="sun" type="directional">
+      <pose>0 0 10 0 0 0</pose><diffuse>0.8 0.8 0.8 1</diffuse><specular>0.1 0.1 0.1 1</specular>
+      <direction>-0.3 0.2 -0.9</direction><cast_shadows>false</cast_shadows>
+    </light>
+    <model name="floor"><static>true</static><link name="floor">
+      <collision name="collision"><geometry><plane><normal>0 0 1</normal><size>30 30</size></plane></geometry></collision>
+      <visual name="visual"><geometry><plane><normal>0 0 1</normal><size>30 30</size></plane></geometry>
+        <material><ambient>0.82 0.84 0.86 1</ambient><diffuse>0.82 0.84 0.86 1</diffuse></material>
+      </visual>
+    </link></model>
+    <!-- Interior spans x=-1.5..7.5, y=-3.5..3.5. Start and map origin coincide. -->
+    <xacro:block name="north_wall" x="3" y="3.6" sx="9.4" sy="0.2" sz="1.0" color="0.32 0.4 0.5 1"/>
+    <xacro:block name="south_wall" x="3" y="-3.6" sx="9.4" sy="0.2" sz="1.0" color="0.32 0.4 0.5 1"/>
+    <xacro:block name="west_wall" x="-1.6" y="0" sx="0.2" sy="7" sz="1.0" color="0.32 0.4 0.5 1"/>
+    <xacro:block name="east_wall" x="7.6" y="0" sx="0.2" sy="7" sz="1.0" color="0.32 0.4 0.5 1"/>
+    <xacro:block name="central_barrier" x="3" y="0" sx="0.25" sy="3" sz="1.0" color="0.85 0.4 0.15 1"/>
+    <xacro:block name="north_crate" x="6" y="2.5" sx="0.8" sy="0.8" sz="0.7" color="0.55 0.4 0.24 1"/>
+    <xacro:block name="south_crate" x="1" y="-2.5" sx="0.8" sy="0.8" sz="0.7" color="0.55 0.4 0.24 1"/>
+    <!-- A loading-room layout: the divider creates an upper aisle, with
+         shelves and islands on either side. Navigation still gets only scans. -->
+    <xacro:block name="divider_extension" x="3" y="-2.5" sx="0.25" sy="2.0" sz="1.0" color="0.85 0.4 0.15 1"/>
+    <xacro:block name="entry_island" x="1.35" y="0.5" sx="0.65" sy="1.0" sz="0.65" color="0.30 0.48 0.62 1"/>
+    <xacro:block name="upper_shelf" x="1.0" y="2.85" sx="1.5" sy="0.45" sz="0.8" color="0.30 0.48 0.62 1"/>
+    <xacro:block name="west_storage" x="-0.85" y="2.3" sx="0.55" sy="0.7" sz="0.65" color="0.55 0.4 0.24 1"/>
+    <xacro:block name="lower_shelf" x="4.85" y="-2.5" sx="1.3" sy="0.55" sz="0.8" color="0.30 0.48 0.62 1"/>
+    <xacro:block name="east_storage" x="6.7" y="-1.7" sx="0.6" sy="0.65" sz="0.65" color="0.55 0.4 0.24 1"/>
+    <xacro:block name="exit_island" x="4.5" y="-1.2" sx="0.55" sy="0.7" sz="0.65" color="0.30 0.48 0.62 1"/>
+
+    <!-- Physical sliding obstacle. A world-fixed anchor and prismatic joint
+         constrain it to an aisle-crossing rail; the normal Gazebo joint
+         controller moves the collider continuously. No pose teleportation. -->
+    <model name="moving_obstacle">
+      <pose>4.7 1.35 0 0 0 0</pose>
+      <link name="anchor">
+        <inertial><mass>1</mass><inertia><ixx>1</ixx><iyy>1</iyy><izz>1</izz></inertia></inertial>
+      </link>
+      <link name="body">
+        <pose>0 0 0.42 0 0 0</pose>
+        <gravity>false</gravity>
+        <inertial><mass>5</mass><inertia><ixx>0.45</ixx><iyy>0.40</iyy><izz>0.30</izz></inertia></inertial>
+        <collision name="obstacle_collision"><geometry><box><size>0.55 0.65 0.8</size></box></geometry></collision>
+        <visual name="red_body"><geometry><box><size>0.55 0.65 0.8</size></box></geometry>
+          <material><ambient>0.85 0.10 0.12 1</ambient><diffuse>0.85 0.10 0.12 1</diffuse></material>
+        </visual>
+        <visual name="warning_band"><pose>0 0 0.15 0 0 0</pose>
+          <geometry><box><size>0.56 0.66 0.10</size></box></geometry>
+          <material><ambient>1 0.75 0.05 1</ambient><diffuse>1 0.75 0.05 1</diffuse></material>
+        </visual>
+        <sensor name="contact" type="contact">
+          <contact><collision>obstacle_collision</collision><topic>/demo/obstacle_contacts</topic></contact>
+          <always_on>true</always_on><update_rate>30</update_rate>
+        </sensor>
+      </link>
+      <joint name="world_anchor" type="fixed"><parent>world</parent><child>anchor</child></joint>
+      <joint name="slider" type="prismatic">
+        <parent>anchor</parent><child>body</child>
+        <axis><xyz>0 1 0</xyz><limit><lower>-0.9</lower><upper>0.9</upper></limit></axis>
+      </joint>
+      <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+        <joint_name>slider</joint_name><topic>/demo/obstacle_target</topic>
+        <use_velocity_commands>true</use_velocity_commands><cmd_max>0.35</cmd_max>
+      </plugin>
+      <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+        <joint_name>slider</joint_name><topic>/demo/obstacle_joint_states</topic><update_rate>30</update_rate>
+      </plugin>
+    </model>
+    <xacro:pad name="START_green" x="0" y="0" color="0.1 0.75 0.3 1"/>
+    <xacro:pad name="FINISH_blue" x="6" y="0" color="0.1 0.4 0.95 1"/>
+  </world>
+</sdf>

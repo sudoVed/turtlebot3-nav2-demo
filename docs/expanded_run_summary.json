@@ -1,0 +1,19 @@
+{
+  "configuration": "SmacPlanner2D + MPPI; global inflation 0.50/scaling5; local 0.60/scaling3; CostCritic8; 36s mover",
+  "result": "SUCCEEDED",
+  "wall_seconds": 37.8,
+  "reported_recoveries": 0,
+  "goal_position_error_m": 0.239,
+  "error_measurement": "SLAM map-to-base_footprint TF, not independent ground truth",
+  "observed_map_cells_initial": 1523,
+  "observed_map_cells_final": 22279,
+  "moving_box_contact_records": 0,
+  "joint_messages": 2453,
+  "scan_messages": 441,
+  "plans_observed": 25,
+  "obstacle_y_range_m": [
+    0.5000000000000001,
+    2.2
+  ],
+  "scope": "One fresh-map GUI integration run. Contact sensor covers moving box only; not a reliability guarantee."
+}

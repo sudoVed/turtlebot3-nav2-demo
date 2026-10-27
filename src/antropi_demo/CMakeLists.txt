@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.16)
+project(antropi_demo)
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+ament_python_install_package(${PROJECT_NAME})
+install(DIRECTORY launch config worlds rviz DESTINATION share/${PROJECT_NAME})
+install(PROGRAMS scripts/run_mission.py scripts/demo_scene.py DESTINATION lib/${PROJECT_NAME})
+ament_package()

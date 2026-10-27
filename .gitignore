@@ -1,0 +1,12 @@
+build/
+install/
+log/
+.runtime/
+__pycache__/
+*.pyc
+dist/
+*.bag
+*.db3
+*.mcap
+.DS_Store
+private_notes/
